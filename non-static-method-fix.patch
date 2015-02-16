@@ -1,0 +1,431 @@
+diff --git a/apache/log4php/LoggerAppender.php b/apache/log4php/LoggerAppender.php
+index 0fe4833..095c296 100755
+--- a/apache/log4php/LoggerAppender.php
++++ b/apache/log4php/LoggerAppender.php
+@@ -38,7 +38,7 @@ class LoggerAppender {
+      * @param string $class create an instance of this appender class
+      * @return LoggerAppender
+      */
+-    function factory($name, $class)
++    static function factory($name, $class)
+     {
+         $class = basename($class);
+         if (!empty($class)) {
+@@ -57,7 +57,7 @@ class LoggerAppender {
+      * @param string $class create or get a reference instance of this class
+      * @return LoggerAppender 
+      */
+-    function &singleton($name, $class = '')
++    static function &singleton($name, $class = '')
+     {
+         static $instances;
+         
+diff --git a/apache/log4php/LoggerHierarchy.php b/apache/log4php/LoggerHierarchy.php
+index 2543cd4..d970d5f 100755
+--- a/apache/log4php/LoggerHierarchy.php
++++ b/apache/log4php/LoggerHierarchy.php
+@@ -98,7 +98,7 @@ class LoggerHierarchy {
+ /* --------------------------------------------------------------------------*/
+ /* --------------------------------------------------------------------------*/
+ 
+-    function &singleton()
++    static function &singleton()
+     {
+         static $instance;
+         
+diff --git a/apache/log4php/LoggerLayout.php b/apache/log4php/LoggerLayout.php
+index 5cf917a..8d2fe19 100755
+--- a/apache/log4php/LoggerLayout.php
++++ b/apache/log4php/LoggerLayout.php
+@@ -37,7 +37,7 @@ class LoggerLayout {
+      * @param string $class
+      * @return LoggerLayout
+      */
+-    function factory($class)
++    static function factory($class)
+     {
+         if (!empty($class)) {
+             $class = basename($class);
+diff --git a/apache/log4php/LoggerLevel.php b/apache/log4php/LoggerLevel.php
+index 6067f4b..1182266 100755
+--- a/apache/log4php/LoggerLevel.php
++++ b/apache/log4php/LoggerLevel.php
+@@ -110,7 +110,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelFatal()
++    static function &getLevelFatal()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_FATAL_INT, 'FATAL', 0);
+@@ -122,7 +122,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelError()
++    static function &getLevelError()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_ERROR_INT, 'ERROR', 3);
+@@ -134,7 +134,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelWarn()
++    static function &getLevelWarn()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_WARN_INT, 'WARN', 4);
+@@ -146,7 +146,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelInfo()
++    static function &getLevelInfo()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_INFO_INT, 'INFO', 6);
+@@ -158,7 +158,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelDebug()
++    static function &getLevelDebug()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_DEBUG_INT, 'DEBUG', 7);
+@@ -170,7 +170,7 @@ class LoggerLevel {
+      * @static
+      * @return LoggerLevel
+      */
+-    function &getLevelAll()
++    static function &getLevelAll()
+     {
+         static $level;
+         if (!isset($level)) $level = new LoggerLevel(LOG4PHP_LEVEL_ALL_INT, 'ALL', 7);
+@@ -230,7 +230,7 @@ class LoggerLevel {
+      * @param LoggerLevel $default
+      * @static 
+      */
+-    function &toLevel($arg, $defaultLevel = null)
++    static function &toLevel($arg, $defaultLevel = null)
+     {
+         if ($defaultLevel === null) {
+             return LoggerLevel::toLevel($arg, LoggerLevel::getLevelDebug());
+diff --git a/apache/log4php/LoggerLog.php b/apache/log4php/LoggerLog.php
+index 7444c0a..7454ac4 100755
+--- a/apache/log4php/LoggerLog.php
++++ b/apache/log4php/LoggerLog.php
+@@ -44,13 +44,13 @@ class LoggerLog {
+      * @param integer $errLevel level to log
+      * @static
+      */
+-    function log($message, $errLevel = E_USER_NOTICE)
++    static function log($message, $errLevel = E_USER_NOTICE)
+     {
+         if (LoggerLog::internalDebugging())
+             trigger_error($message, $errLevel);
+     }
+     
+-    function internalDebugging($value = null)
++    static function internalDebugging($value = null)
+     {
+         static $debug = false;
+ 
+@@ -66,7 +66,7 @@ class LoggerLog {
+      * @static
+      * @since 0.3
+      */
+-    function debug($message)
++    static function debug($message)
+     {
+         LoggerLog::log($message, E_USER_NOTICE);
+     }
+@@ -78,7 +78,7 @@ class LoggerLog {
+      * @static
+      * @since 0.3
+      */
+-    function error($message)
++    static function error($message)
+     {
+         trigger_error($message, E_USER_ERROR);
+     }
+@@ -90,7 +90,7 @@ class LoggerLog {
+      * @static
+      * @since 0.3
+      */
+-    function warn($message)
++    static function warn($message)
+     {
+         trigger_error($message, E_USER_WARNING);
+     }
+diff --git a/apache/log4php/LoggerManager.php b/apache/log4php/LoggerManager.php
+index b5f155a..973b83d 100755
+--- a/apache/log4php/LoggerManager.php
++++ b/apache/log4php/LoggerManager.php
+@@ -86,7 +86,7 @@ class LoggerManager {
+      * @static
+      * @return Logger
+      */
+-    function &getLogger($name, $factory = null)
++    static function &getLogger($name, $factory = null)
+     {
+         $repository =& LoggerManager::getLoggerRepository();
+         return $repository->getLogger($name, $factory);
+@@ -98,7 +98,7 @@ class LoggerManager {
+      * @static
+      * @return LoggerHierarchy
+      */
+-    function &getLoggerRepository()
++    static function &getLoggerRepository()
+     {
+         return LoggerHierarchy::singleton();    
+     }
+diff --git a/apache/log4php/LoggerPropertyConfigurator.php b/apache/log4php/LoggerPropertyConfigurator.php
+index 3467da4..3bd8ca2 100755
+--- a/apache/log4php/LoggerPropertyConfigurator.php
++++ b/apache/log4php/LoggerPropertyConfigurator.php
+@@ -114,7 +114,7 @@ class LoggerPropertyConfigurator extends LoggerConfigurator {
+      * @return boolean configuration result
+      * @static
+      */
+-    function configure($url = '')
++    static function configure($url = '')
+     {
+         $configurator = new LoggerPropertyConfigurator();
+         $repository =& LoggerManager::getLoggerRepository();
+diff --git a/apache/log4php/config/LoggerPropertySetter.php b/apache/log4php/config/LoggerPropertySetter.php
+index 261e743..a2c366a 100755
+--- a/apache/log4php/config/LoggerPropertySetter.php
++++ b/apache/log4php/config/LoggerPropertySetter.php
+@@ -80,7 +80,7 @@ class LoggerPropertySetter {
+      * @param string $prefix Only keys having the specified prefix will be set.
+      * @static
+      */
+-    function setPropertiesByObject(&$obj, $properties, $prefix)
++    static function setPropertiesByObject(&$obj, $properties, $prefix)
+     {
+         $pSetter = new LoggerPropertySetter($obj);
+         return $pSetter->setProperties($properties, $prefix);
+diff --git a/apache/log4php/helpers/LoggerOptionConverter.php b/apache/log4php/helpers/LoggerOptionConverter.php
+index 91a6d5c..4a06205 100755
+--- a/apache/log4php/helpers/LoggerOptionConverter.php
++++ b/apache/log4php/helpers/LoggerOptionConverter.php
+@@ -160,7 +160,7 @@ class LoggerOptionConverter {
+      * @return LoggerLevel a {@link LoggerLevel} or null
+      * @static
+      */
+-    function toLevel($value, $defaultValue)
++    static function toLevel($value, $defaultValue)
+     {
+         if($value === null)
+             return $defaultValue;
+@@ -247,7 +247,7 @@ class LoggerOptionConverter {
+      *
+      * @static
+      */
+-    function findAndSubst($key, $props)
++    static function findAndSubst($key, $props)
+     {
+         $value = @$props[$key];
+         if(empty($value)) {
+@@ -291,7 +291,7 @@ class LoggerOptionConverter {
+      *
+      * @static
+      */
+-    function substVars($val, $props = null)
++    static function substVars($val, $props = null)
+     {
+         LoggerLog::debug("LoggerOptionConverter::substVars():val=[{$val}]");
+         
+diff --git a/apache/log4php/spi/LoggerLoggingEvent.php b/apache/log4php/spi/LoggerLoggingEvent.php
+index 930abf2..0afa00a 100755
+--- a/apache/log4php/spi/LoggerLoggingEvent.php
++++ b/apache/log4php/spi/LoggerLoggingEvent.php
+@@ -311,7 +311,7 @@ class LoggerLoggingEvent {
+      * @return float
+      * @static
+      */
+-    function getStartTime()
++    static function getStartTime()
+     {
+         static $startTime;
+         
+diff --git a/iqsys/otpwebshop/factory/WSAnswerFactory.php b/iqsys/otpwebshop/factory/WSAnswerFactory.php
+index c92d60f..676a9aa 100755
+--- a/iqsys/otpwebshop/factory/WSAnswerFactory.php
++++ b/iqsys/otpwebshop/factory/WSAnswerFactory.php
+@@ -26,7 +26,7 @@ class WSAnswerFactory  {
+     * @param string a tranzakció kódja
+     * @return mixed a megfelelõ WAnswerOf... objektum
+     */
+-    function getAnswerFactory($workflowName) {
++    static function getAnswerFactory($workflowName) {
+         switch ($workflowName) {
+            case 'WEBSHOPTRANZAZONGENERALAS':
+                 return new WAnswerOfWebShopTranzAzonGeneralas();
+diff --git a/iqsys/otpwebshop/util/ConfigUtils.php b/iqsys/otpwebshop/util/ConfigUtils.php
+index b7f55e9..9aa51e4 100755
+--- a/iqsys/otpwebshop/util/ConfigUtils.php
++++ b/iqsys/otpwebshop/util/ConfigUtils.php
+@@ -22,7 +22,7 @@ class ConfigUtils {
+     * @param String paramName a keresett konfigurációs paraméter neve
+     * @return string a paraméter értéke vagy null
+     */
+-    function safeConfigParam($config, $paramName) {
++    static function safeConfigParam($config, $paramName) {
+         return array_key_exists($paramName, $config) ? $config[$paramName] : null;
+     }
+         
+@@ -38,7 +38,7 @@ class ConfigUtils {
+     *   (arra az esetre, ha nem létezik a megfelelõ paraméter)
+     * @return mixed a paraméter értéke string vagy $defaultValue-val megegyezõ típusban
+     */
+-    function getConfigParam($config, $paramName, $posId = NULL, $defaultValue = NULL) {
++    static function getConfigParam($config, $paramName, $posId = NULL, $defaultValue = NULL) {
+         $paramValue = NULL;
+         if (!is_null($posId)) {
+             $paramValue = ConfigUtils::safeConfigParam($config, $paramName . '_' . $posId);
+diff --git a/iqsys/otpwebshop/util/RequestUtils.php b/iqsys/otpwebshop/util/RequestUtils.php
+index 02a8be5..940a310 100755
+--- a/iqsys/otpwebshop/util/RequestUtils.php
++++ b/iqsys/otpwebshop/util/RequestUtils.php
+@@ -33,7 +33,7 @@ class RequestUtils {
+      * @param paramName a paraméter neve
+      * @return a paraméter szöveges értéke
+      */
+-    function getBooleanValue($value, $dflt = false) {
++    static function getBooleanValue($value, $dflt = false) {
+         $boolValue = false;
+         
+         if (is_bool($value)) {
+@@ -62,7 +62,7 @@ class RequestUtils {
+      * @param mixed value a logikai vagy string változó
+      * @return string a paraméter szöveges értéke
+      */
+-    function booleanToString($value, $dflt = "FALSE") {
++    static function booleanToString($value, $dflt = "FALSE") {
+         $boolValue = RequestUtils::getBooleanValue($value, NULL);
+         return ($boolValue === true ? "TRUE" : ($boolValue === false ? "FALSE" : $dflt));        
+     }
+diff --git a/iqsys/otpwebshop/util/SignatureUtils.php b/iqsys/otpwebshop/util/SignatureUtils.php
+index fc42dbd..e0b6f5a 100755
+--- a/iqsys/otpwebshop/util/SignatureUtils.php
++++ b/iqsys/otpwebshop/util/SignatureUtils.php
+@@ -16,7 +16,7 @@ class SignatureUtils {
+     * @param string $privKeyFileName a privát kulcs állomány elérési címe
+     * @return resource privát kulcs
+     */
+-    function loadPrivateKey($privKeyFileName) {
++    static function loadPrivateKey($privKeyFileName) {
+         $priv_key = file_get_contents($privKeyFileName);
+         $pkeyid = openssl_get_privatekey($priv_key);
+         return $pkeyid;
+@@ -29,7 +29,7 @@ class SignatureUtils {
+     * @param array aláírandó mezõk 
+     * @return string aláírandó szöveg
+     */
+-    function getSignatureText($signatureFields) {
++    static function getSignatureText($signatureFields) {
+         $signatureText = '';
+         foreach ($signatureFields as $data) {
+             $signatureText = $signatureText.$data.'|';
+@@ -52,7 +52,7 @@ class SignatureUtils {
+     * 
+     * @return string digitális aláírás, hexadecimális formában (ahogy a banki felület elvárja). 
+     */
+-    function generateSignature($data, $pkcs8PrivateKey, $properties, $logger) {
++    static function generateSignature($data, $pkcs8PrivateKey, $properties, $logger) {
+     	
+     	global $signature;
+     	
+diff --git a/iqsys/otpwebshop/util/SoapUtils.php b/iqsys/otpwebshop/util/SoapUtils.php
+index 2c60fe3..e295e98 100755
+--- a/iqsys/otpwebshop/util/SoapUtils.php
++++ b/iqsys/otpwebshop/util/SoapUtils.php
+@@ -20,7 +20,7 @@ class SoapUtils {
+     * 
+     * @return SoapClient A banki felülethez illeszkedõ SOAP kliens.
+     */
+-    function createSoapClient($properties) {
++    static function createSoapClient($properties) {
+         $soapClientProps = array (   
+             'location' => ConfigUtils::safeConfigParam($properties, PROPERTY_OTPMWSERVERURL),
+             'uri' => ConfigUtils::safeConfigParam($properties, PROPERTY_OTPMWSERVERURL),
+@@ -81,7 +81,7 @@ class SoapUtils {
+      *
+      * @return boolean true sikeres ping-etés esetén, egyébként false.
+      */
+-    function startWorkflowSynch($workflowName, $inputXml, $soapClient, $logger) {
++    static function startWorkflowSynch($workflowName, $inputXml, $soapClient, $logger) {
+         
+         $workflowState = NULL;
+         $retryCount = 0;
+diff --git a/iqsys/otpwebshop/util/WebShopXmlUtils.php b/iqsys/otpwebshop/util/WebShopXmlUtils.php
+index 30fbf6f..62c5d16 100755
+--- a/iqsys/otpwebshop/util/WebShopXmlUtils.php
++++ b/iqsys/otpwebshop/util/WebShopXmlUtils.php
+@@ -26,7 +26,7 @@ class WebShopXmlUtils {
+     * 
+     * @return DomDocument a létrehozott objektum
+     */
+-    function getRequestSkeleton($templateName, &$variables) {
++    static function getRequestSkeleton($templateName, &$variables) {
+         $dom = new DomDocument('1.0', WF_INPUTXML_ENCODING);
+         $root = $dom->createElement('StartWorkflow');
+         $dom->appendChild($root);
+@@ -54,7 +54,7 @@ class WebShopXmlUtils {
+     * @param string attributeName a változóhoz esetlegesen hozzáadandó attribútum neve
+     * @param string attributeValue a változóhoz esetlegesen hozzáadandó attribútum értéke
+     */
+-    function addParameter($dom, $variables, $name, $value, $attributeName = null, $attributeValue = null) {
++    static function addParameter($dom, $variables, $name, $value, $attributeName = null, $attributeValue = null) {
+         $node = null;
+         if (is_bool($value)) {
+             $value = $value ? REQUEST_TRUE_CONST : REQUEST_FALSE_CONST;
+@@ -102,7 +102,7 @@ class WebShopXmlUtils {
+     * 
+     * @return DomNode az adott nevû Node / Element vagy NULL
+     */
+-    function getChildElement($record, $childName) {
++    static function getChildElement($record, $childName) {
+         $result = NULL;
+         $childNodes = $record->childNodes;
+         for($i = 0; !is_null($childNodes) && $i<= $childNodes->length && is_null($result); $i++){
+@@ -123,7 +123,7 @@ class WebShopXmlUtils {
+     * 
+     * @return string a child node szöveges tartalma
+     */
+-    function getElementText($record, $childName) {
++    static function getElementText($record, $childName) {
+         $result = NULL;
+         $childNode = self::getChildElement($record, $childName);
+         if (!is_null($childNode)) $result = $childNode->textContent;
+@@ -138,7 +138,7 @@ class WebShopXmlUtils {
+     * @param DOMDocument / DOMNode $node a kiértékelés helye
+     * @param string $xpath xpath kifejezés
+     */
+-    function getNodeByXPath($node, $xpath) {
++    static function getNodeByXPath($node, $xpath) {
+         $doc = NULL;
+         if (is_a($node, 'DOMDocument')) {
+             $doc = $node;
+@@ -197,7 +197,7 @@ class WebShopXmlUtils {
+     * @param string $responseStr output xml szövege
+     * @param WResponse feltöltendõ response objektum
+     */
+-    function parseOutputXml ($responseStr, $wresponse) {
++    static function parseOutputXml ($responseStr, $wresponse) {
+         $wresponse->response = $responseStr;
+         $wresponse->responseDOM = new DomDocument();
+         $wresponse->responseDOM->loadXML($wresponse->response);
+@@ -235,7 +235,7 @@ class WebShopXmlUtils {
+     * 
+     * @return string $dom->saveXML()
+     */
+-    function xmlToString($dom) {
++    static function xmlToString($dom) {
+         return $dom->saveXML();
+     }
+   
